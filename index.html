@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eskişehir Etkinlik Rehberi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome İkon Seti -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: { eskiRed: '#c51b24', eskiDark: '#121212' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-eskiDark text-gray-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Üst Bar / Header -->
+    <header class="bg-black/60 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-eskiRed to-red-600 flex items-center justify-center shadow-lg shadow-red-900/40">
+                    <i class="fa-solid fa-city text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white">Eskişehir Etkinlik Rehberi</h1>
+                    <p class="text-xs text-gray-400">Şehirdeki tüm konser, maç, tiyatro ve aktiviteler</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button onclick="resetData()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-3 py-2.5 rounded-xl border border-gray-700 transition-all cursor-pointer">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Yenile
+                </button>
+                <button onclick="openModal()" class="bg-eskiRed hover:bg-red-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-red-900/30 transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-plus"></i> Etkinlik Ekle
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ana İçerik -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
+        
+        <!-- Tarih Seçici Şerit -->
+        <section class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-days text-eskiRed"></i> Günlük Takvim (3 Hafta)
+                </h2>
+                <span id="currentMonthYear" class="text-sm font-medium text-gray-300"></span>
+            </div>
+            
+            <div id="dateScroller" class="flex gap-3 overflow-x-auto pb-2">
+                <!-- JS dolduracak -->
+            </div>
+        </section>
+
+        <!-- Kategori Filtre Butonları -->
+        <section class="mb-8">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2">
+                <button onclick="filterCategory('Tümü')" id="cat-btn-Tümü" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-eskiRed text-white shadow-lg shadow-red-900/20">
+                    <i class="fa-solid fa-border-all mr-1.5"></i> Seçili Günün Tüm Etkinlikleri
+                </button>
+                <button onclick="filterCategory('Konser')" id="cat-btn-Konser" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-gray-900/80 border border-gray-800 text-gray-300 hover:border-gray-700">
+                    <i class="fa-solid fa-music mr-1.5 text-purple-400"></i> Tüm Konserler (3 Hafta)
+                </button>
+                <button onclick="filterCategory('Spor')" id="cat-btn-Spor" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-gray-900/80 border border-gray-800 text-gray-300 hover:border-gray-700">
+                    <i class="fa-solid fa-futbol mr-1.5 text-red-400"></i> Tüm Spor / Maçlar (3 Hafta)
+                </button>
+                <button onclick="filterCategory('Tiyatro')" id="cat-btn-Tiyatro" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-gray-900/80 border border-gray-800 text-gray-300 hover:border-gray-700">
+                    <i class="fa-solid fa-masks-theater mr-1.5 text-emerald-400"></i> Tüm Tiyatrolar (3 Hafta)
+                </button>
+            </div>
+        </section>
+
+        <!-- Liste Başlığı ve Etkinlik Kartları -->
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="selectedDateTitle" class="text-lg font-bold text-white flex items-center gap-2">
+                    <!-- Dinamik başlık -->
+                </h2>
+                <span id="eventCountBadge" class="text-xs bg-gray-800 text-gray-300 px-3 py-1 rounded-full border border-gray-700">0 Etkinlik</span>
+            </div>
+
+            <!-- Etkinlik Listesi Container -->
+            <div id="eventsContainer" class="space-y-4">
+                <!-- JS dolduracak -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black/30 border-t border-gray-800 py-6 text-center text-xs text-gray-500">
+        <p>Eskişehir Etkinlik Rehberi &copy; 2026 &bull; Porsuk'tan Adalar'a Şehrin Nabzı</p>
+    </footer>
+
+    <!-- Yeni Etkinlik Ekle Modal -->
+    <div id="eventModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-eskiRed"></i> Yeni Etkinlik Ekle
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="addEventForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Etkinlik Adı</label>
+                    <input type="text" id="eventTitle" required placeholder="Örn: Eskişehirspor Maçı / Konser" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-eskiRed">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Tarih</label>
+                        <input type="date" id="eventDate" required class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-eskiRed">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Saat (Saat:Dakika)</label>
+                        <input type="text" id="eventTime" required placeholder="20:30" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-eskiRed">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Kategori</label>
+                    <select id="eventCategory" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-eskiRed">
+                        <option value="Spor">Spor</option>
+                        <option value="Konser">Konser</option>
+                        <option value="Tiyatro">Tiyatro</option>
+                        <option value="Festival">Festival</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Konum / Mekan</label>
+                    <input type="text" id="eventLocation" required placeholder="Örn: Vehbi Koç Kongre Merkezi" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-eskiRed">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Açıklama</label>
+                    <textarea id="eventDesc" rows="2" placeholder="Etkinlik açıklaması..." class="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-eskiRed"></textarea>
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="closeModal()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium py-2.5 rounded-xl text-sm transition-colors">İptal</button>
+                    <button type="submit" class="flex-1 bg-eskiRed hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-sm shadow-lg shadow-red-900/20 transition-all">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Uygulama Mantığı -->
+    <script>
+        const now = new Date();
+
+        function getYYYYMMDD(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function addDays(d, days) {
+            const res = new Date(d);
+            res.setDate(res.getDate() + days);
+            return res;
+        }
+
+        const todayStr = getYYYYMMDD(now);
+
+        // Dinamik Etkinlik Veritabanı
+        function createInitialData() {
+            return {
+                [todayStr]: [
+                    { title: "Porsuk Çayı Sabah Koşusu & Maratonu", time: "08:30", category: "Spor", location: "Kanlıkavak Parkı / Porsuk Bulvarı", desc: "Güne dinç başlamak isteyenler için açık hava spor buluşması." },
+                    { title: "Eskişehir Bilim & Teknoloji Festivali Stantları", time: "10:30", category: "Festival", location: "Eskişehir Fuar Kongre Merkezi", desc: "Öğrenci kulüplerinin teknoloji ve bilim atölye stantları." },
+                    { title: "Hande Ünsal Canlı Konseri", time: "20:30", category: "Konser", location: "Vehbi Koç Kongre Merkezi", desc: "Pop müziğin sevilen ismi canlı performansıyla sahnede." },
+                    { title: "SOUP OPERA Rock Performansı", time: "21:30", category: "Konser", location: "F/Stop Salon Eskişehir", desc: "Alternatif rock grubu canlı performansı." }
+                ],
+                [getYYYYMMDD(addDays(now, 1))]: [
+                    { title: "Eskişehirspor - Deplasman Karşılaşması Canlı Yayın", time: "19:00", category: "Spor", location: "Şehir Geneli / Spor Mekanları", desc: "Eskişehirspor taraftarlarının ortak maç izleme etkinliği." },
+                    { title: "Aşk Mektupları Tiyatro Oyunu", time: "20:00", category: "Tiyatro", location: "Vehbi Koç Kongre Merkezi", desc: "Duygusal ve etkileyici bir sahne gösterisi." },
+                    { title: "Fareler ve İnsanlar Tiyatrosu", time: "20:30", category: "Tiyatro", location: "Rampa Sahne Eskişehir", desc: "John Steinbeck klasiğinin tiyatro uyarlaması." },
+                    { title: "Echo Tribute Band: Tarkan Hits", time: "21:30", category: "Konser", location: "F/Stop Salon Eskişehir", desc: "Nostaljik ve popüler hit parçalarla dolu bir gece." }
+                ],
+                [getYYYYMMDD(addDays(now, 2))]: [
+                    { title: "Porsuk Bulvarı Yürüyüş Grubu", time: "09:00", category: "Spor", location: "Adalar Bölgesi", desc: "Halk yürüyüşü ve açık hava sporu." },
+                    { title: "Komşum Totoro Film Gösterimi", time: "17:00", category: "Festival", location: "F/Stop Salon Eskişehir", desc: "Anime ve sinema kulübü buluşması." },
+                    { title: "Çakal Rap Konseri", time: "20:00", category: "Konser", location: "Eskişehir Fuar Kongre Merkezi", desc: "Rap müziğin sevilen ismi Eskişehir'de." }
+                ],
+                [getYYYYMMDD(addDays(now, 3))]: [
+                    { title: "Doğa & Fotoğraf Yürüyüşü", time: "16:30", category: "Spor", location: "Kanlıkavak Parkı", desc: "Sonbahar renkleri eşliğinde fotoğraf rotası." },
+                    { title: "Şehir Tiyatroları Yaratıcı Drama", time: "18:00", category: "Tiyatro", location: "Haller Gençlik Merkezi", desc: "Öğrencilere yönelik tiyatro çalışması." }
+                ],
+                [getYYYYMMDD(addDays(now, 5))]: [
+                    { title: "Senfoni Orkestrası Özel Dinletisi", time: "19:30", category: "Konser", location: "Büyükşehir Kültür Sarayı", desc: "Klasik müzik dinletisi." }
+                ],
+                [getYYYYMMDD(addDays(now, 7))]: [
+                    { title: "Porsuk Kano Yarışları", time: "11:00", category: "Spor", location: "Porsuk Çayı Adalar", desc: "Kano kulüpleri kupası karşılaşması." },
+                    { title: "Mabel Matiz Konseri", time: "21:00", category: "Konser", location: "Vehbi Koç Kongre Merkezi", desc: "Mabel Matiz Eskişehir konseri." }
+                ],
+                [getYYYYMMDD(addDays(now, 11))]: [
+                    { title: "Gençlik Tiyatrosu Sahnesi", time: "20:00", category: "Tiyatro", location: "Atatürk Kültür Sanat Merkezi", desc: "Özel sahne tiyatro gösterisi." }
+                ],
+                [getYYYYMMDD(addDays(now, 14))]: [
+                    { title: "Eskişehirspor - Dev Derbi Maçı", time: "19:00", category: "Spor", location: "Yeni Eskişehir Stadyumu", desc: "Zirve mücadelesinde kritik lig maçı!" },
+                    { title: "Duman Canlı Konseri", time: "21:30", category: "Konser", location: "Fuar Kongre Merkezi", desc: "Efsane rock grubu Eskişehir'de." }
+                ]
+            };
+        }
+
+        let eventsData = createInitialData();
+        let selectedDate = todayStr;
+        let activeCategory = "Tümü";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            buildDateScroller();
+            renderEvents();
+        });
+
+        function resetData() {
+            eventsData = createInitialData();
+            selectedDate = todayStr;
+            activeCategory = "Tümü";
+            updateCategoryButtonsUI();
+            buildDateScroller();
+            renderEvents();
+        }
+
+        function buildDateScroller() {
+            const scroller = document.getElementById('dateScroller');
+            if (!scroller) return;
+            scroller.innerHTML = '';
+            
+            const monthsTR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+            const daysTR = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+
+            const monthTitle = document.getElementById('currentMonthYear');
+            if (monthTitle) monthTitle.innerText = `${monthsTR[now.getMonth()]} ${now.getFullYear()}`;
+
+            for (let i = 0; i < 21; i++) {
+                const d = addDays(now, i);
+                const dateString = getYYYYMMDD(d);
+                const dayOfWeek = daysTR[d.getDay()];
+                
+                const isSelected = dateString === selectedDate && activeCategory === "Tümü";
+                const hasEvents = eventsData[dateString] && eventsData[dateString].length > 0;
+
+                const btn = document.createElement('button');
+                btn.className = `flex flex-col items-center justify-center min-w-[75px] h-[85px] rounded-2xl border transition-all cursor-pointer relative ${
+                    isSelected 
+                        ? 'bg-eskiRed border-red-500 text-white shadow-lg shadow-red-900/30 scale-105' 
+                        : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700 hover:bg-gray-800/40'
+                }`;
+                
+                btn.onclick = () => {
+                    activeCategory = "Tümü";
+                    updateCategoryButtonsUI();
+                    selectedDate = dateString;
+                    buildDateScroller();
+                    renderEvents();
+                };
+
+                btn.innerHTML = `
+                    <span class="text-xs font-medium uppercase tracking-wider mb-1">${dayOfWeek}</span>
+                    <span class="text-xl font-bold">${d.getDate()}</span>
+                    ${hasEvents ? `<span class="absolute bottom-2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-eskiRed'}"></span>` : ''}
+                `;
+                
+                scroller.appendChild(btn);
+            }
+        }
+
+        function filterCategory(category) {
+            activeCategory = category;
+            updateCategoryButtonsUI();
+            renderEvents();
+        }
+
+        function updateCategoryButtonsUI() {
+            const categories = ["Tümü", "Konser", "Spor", "Tiyatro"];
+            categories.forEach(cat => {
+                const btn = document.getElementById(`cat-btn-${cat}`);
+                if (!btn) return;
+                if (cat === activeCategory) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-eskiRed text-white shadow-lg shadow-red-900/20";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-gray-900/80 border border-gray-800 text-gray-300 hover:border-gray-700";
+                }
+            });
+        }
+
+        function renderEvents() {
+            const container = document.getElementById('eventsContainer');
+            const titleElem = document.getElementById('selectedDateTitle');
+            const badgeElem = document.getElementById('eventCountBadge');
+            
+            if (!container) return;
+
+            let eventsToShow = [];
+
+            if (activeCategory === "Tümü") {
+                const parts = selectedDate.split('-');
+                const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                const options = { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' };
+                if (titleElem) titleElem.innerHTML = `<i class="fa-solid fa-calendar-day text-eskiRed"></i> ${dateObj.toLocaleDateString('tr-TR', options)}`;
+                
+                eventsToShow = (eventsData[selectedDate] || []).map(ev => ({ ...ev, dateKey: selectedDate }));
+            } else {
+                if (titleElem) titleElem.innerHTML = `<i class="fa-solid fa-filter text-eskiRed"></i> Önümüzdeki 3 Haftalık Tüm ${activeCategory} Programı`;
+                
+                for (const dateKey in eventsData) {
+                    eventsData[dateKey].forEach(ev => {
+                        if (ev.category === activeCategory) {
+                            eventsToShow.push({ ...ev, dateKey: dateKey });
+                        }
+                    });
+                }
+                eventsToShow.sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+            }
+
+            // Sabahtan akşama doğru saat sıralaması
+            eventsToShow.sort((a, b) => {
+                if (a.dateKey === b.dateKey) {
+                    return a.time.localeCompare(b.time);
+                }
+                return 0;
+            });
+
+            if (badgeElem) badgeElem.innerText = `${eventsToShow.length} Etkinlik`;
+            container.innerHTML = '';
+
+            if (eventsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-gray-900/40 border border-gray-800/80 rounded-2xl p-12 text-center">
+                        <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                            <i class="fa-solid fa-mug-hot text-lg"></i>
+                        </div>
+                        <h4 class="text-sm font-semibold text-gray-300 mb-1">Bu kategoride gösterilecek etkinlik yok</h4>
+                        <p class="text-xs text-gray-500 mb-4">Yeni etkinlik ekleyerek takvimi zenginleştirebilirsiniz.</p>
+                        <button onclick="openModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-medium px-4 py-2 rounded-xl transition-colors">
+                            <i class="fa-solid fa-plus mr-1"></i> Etkinlik Ekle
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            eventsToShow.forEach((ev) => {
+                const card = document.createElement('div');
+                card.className = "bg-gray-900/80 border border-gray-800/80 hover:border-gray-700 rounded-2xl p-5 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg";
+                
+                let badgeColor = "bg-red-950 text-red-400 border-red-900/50";
+                if(ev.category === "Konser") badgeColor = "bg-purple-950 text-purple-400 border-purple-900/50";
+                if(ev.category === "Tiyatro") badgeColor = "bg-emerald-950 text-emerald-400 border-emerald-900/50";
+                if(ev.category === "Festival") badgeColor = "bg-amber-950 text-amber-400 border-amber-900/50";
+
+                let dateBadgeText = "";
+                if (activeCategory !== "Tümü") {
+                    const p = ev.dateKey.split('-');
+                    dateBadgeText = `<span class="text-xs font-medium text-gray-400 bg-gray-800 px-2.5 py-0.5 rounded-full border border-gray-700"><i class="fa-regular fa-calendar mr-1"></i>${p[2]}.${p[1]}.${p[0]}</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="space-y-2 flex-grow">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full border ${badgeColor}">${ev.category}</span>
+                            <span class="text-xs text-gray-200 bg-gray-800 px-2.5 py-0.5 rounded-full border border-gray-700 flex items-center gap-1 font-mono">
+                                <i class="fa-regular fa-clock text-eskiRed"></i> ${ev.time}
+                            </span>
+                            ${dateBadgeText}
+                        </div>
+                        <h3 class="text-base font-bold text-white tracking-wide">${ev.title}</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">${ev.desc}</p>
+                        <div class="flex items-center gap-1.5 text-xs text-gray-500 pt-1">
+                            <i class="fa-solid fa-location-dot text-eskiRed"></i> ${ev.location}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openModal() {
+            document.getElementById('eventDate').value = selectedDate;
+            document.getElementById('eventModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+            document.getElementById('addEventForm').reset();
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const category = document.getElementById('eventCategory').value;
+            const location = document.getElementById('eventLocation').value;
+            const desc = document.getElementById('eventDesc').value;
+
+            if (!eventsData[date]) {
+                eventsData[date] = [];
+            }
+
+            eventsData[date].push({ title, time, category, location, desc });
+
+            selectedDate = date;
+            activeCategory = "Tümü";
+            updateCategoryButtonsUI();
+            closeModal();
+            buildDateScroller();
+            renderEvents();
+        }
+    </script>
+</body>
+</html>
